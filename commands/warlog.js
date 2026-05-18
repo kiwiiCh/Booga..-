@@ -70,31 +70,29 @@ module.exports = {
     });
 
     const winner = clanWins > enemyWins ? ownClan : (enemyWins > clanWins ? enemyClan : null);
-    const winnerLabel = winner ? `🏆 **${winner}** claimed victory!` : `⚖️ **Draw!**`;
-    const ownScore = `${theme.icons.ownWins} ${ownClan}: **${clanWins}** wins`;
-    const enemyScore = `${theme.icons.enemyWins} ${enemyClan}: **${enemyWins}** wins`;
+    const winnerLabel = winner ? `🏆 **${winner}** wins` : `⚖️ **Draw**`;
+    const ownScore = `🏆 ${ownClan}: **${clanWins}** wins`;
+    const enemyScore = `💀 ${enemyClan}: **${enemyWins}** wins`;
 
     const embed = new EmbedBuilder()
       .setColor(theme.color)
       .setTitle(`${theme.headerEmoji} WAR LOG — ${ownClan.toUpperCase()} vs ${enemyClan.toUpperCase()}`)
-      .setDescription(`${theme.decorLine}\n> *The clash of obsidian blades has been recorded.*\n${theme.decorLine}`)
+      .setDescription(theme.decorLine)
       .addFields(
-        { name: `${theme.icons.own} Your Clan`, value: `\`${ownClan}\``, inline: true },
-        { name: `${theme.icons.enemy} Enemy Clan`, value: `\`${enemyClan}\``, inline: true },
-        { name: `${theme.icons.id} Log ID`, value: `\`#${entry.id}\``, inline: true },
+        { name: `🏳️ Your Clan`, value: `\`${ownClan}\``, inline: true },
+        { name: `🏴 Enemy Clan`, value: `\`${enemyClan}\``, inline: true },
+        { name: `🆔 Log ID`, value: `\`#${entry.id}\``, inline: true },
         { name: DIVIDER, value: ' ', inline: false },
-        { name: `⚔️ Battle Results`, value: `${ownScore}\n${enemyScore}`, inline: false },
-        { name: `🏆 Outcome`, value: winnerLabel, inline: false },
-        { name: `${theme.icons.date} Date`, value: `<t:${Math.floor(entry.id / 1000)}:F>`, inline: true },
-        { name: `${theme.icons.logger} Logged By`, value: `<@${interaction.user.id}>`, inline: true },
+        { name: `⚔️ Results`, value: `${ownScore}\n${enemyScore}`, inline: false },
+        { name: `🎖️ Outcome`, value: winnerLabel, inline: false },
+        { name: `📅 Date`, value: `<t:${Math.floor(entry.id / 1000)}:F>`, inline: true },
+        { name: `👁️ Logged By`, value: `<@${interaction.user.id}>`, inline: true },
       )
       .setFooter({ text: theme.footer, iconURL: interaction.user.displayAvatarURL() })
       .setTimestamp();
 
-    if (document) embed.addFields({ name: `${theme.icons.doc} Documentation`, value: `[📜 View Document](${document})`, inline: false });
-    if (image) {
-      embed.setImage(image.url);
-    }
+    if (document) embed.addFields({ name: `📜 Document`, value: `[View Document](${document})`, inline: false });
+    if (image) embed.setImage(image.url);
 
     await interaction.editReply({ embeds: [embed] });
   }

@@ -16,12 +16,11 @@ module.exports = {
     const theme = THEMES.war;
     await interaction.deferReply();
 
-    const allWars = getAll('wars').reverse(); // newest first
+    const allWars = getAll('wars').reverse();
     const page = interaction.options.getInteger('page') || 1;
     const perPage = 5;
     const totalPages = Math.max(1, Math.ceil(allWars.length / perPage));
     const currentPage = Math.min(page, totalPages);
-    const wars = allWars.slice((currentPage - 1) * perPage, currentPage * perPage);
 
     if (allWars.length === 0) {
       return interaction.editReply({
@@ -29,25 +28,26 @@ module.exports = {
           new EmbedBuilder()
             .setColor(theme.color)
             .setTitle(`${theme.headerEmoji} War Logs Archive`)
-            .setDescription('> *No wars have been logged yet. Use `/warlog` to record a war.*')
+            .setDescription('No wars logged yet. Use `/warlog` to record one.')
             .setFooter({ text: theme.footer })
         ]
       });
     }
 
     const fields = [];
-    for (const w of wars) {
+    for (const w of allWars.slice((currentPage - 1) * perPage, currentPage * perPage)) {
       const winner = w.clanWins > w.enemyWins ? w.ownClan : (w.enemyWins > w.clanWins ? w.enemyClan : 'Draw');
       const date = Math.floor(w.id / 1000);
       let value = `⚔️ **${w.ownClan}** vs 🏴 **${w.enemyClan}**\n🏆 ${w.ownClan}: **${w.clanWins}** | 💀 ${w.enemyClan}: **${w.enemyWins}**\n🎖️ Winner: **${winner}**\n📅 <t:${date}:d>  🆔 \`#${w.id}\``;
       if (w.document) value += `\n📜 [Document](${w.document})`;
+      if (w.imageUrl) value += `\n🖼️ [View Image](${w.imageUrl})`;
       fields.push({ name: `${theme.accentEmoji} War #${w.id}`, value, inline: false });
     }
 
     const embed = new EmbedBuilder()
       .setColor(theme.color)
       .setTitle(`${theme.headerEmoji} WAR LOGS ARCHIVE`)
-      .setDescription(`${theme.decorLine}\n> *All wars fought under the obsidian sky.*\n${theme.decorLine}`)
+      .setDescription(theme.decorLine)
       .addFields(...fields)
       .setFooter({ text: `${theme.footer} • Page ${currentPage}/${totalPages} • ${allWars.length} total wars` })
       .setTimestamp();
